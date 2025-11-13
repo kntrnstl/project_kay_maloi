@@ -33,10 +33,10 @@
             </transition>
           </li>
 
-          <li @click="selectView('manageProduct')" :class="{ active: currentView==='manageProduct' }">
+          <li @click="selectView('manageOrders')" :class="{ active: currentView==='manageOrders' }">
             <span class="icon">✏️</span>
             <transition name="slide-fade" mode="out-in">
-              <span v-if="showText" class="label">Modify Product</span>
+              <span v-if="showText" class="label">Modify Orders</span>
             </transition>
           </li>
 
@@ -74,7 +74,7 @@
 import { useRouter } from 'vue-router';
 import ViewInventory from './ViewInventory.vue'
 import AddProduct from './AddProduct.vue'
-import ManageProduct from './ManageProduct.vue'
+import ManageOrders from './ManageOrders.vue'
 import Categories from './Categories.vue'
 
 export default {
@@ -102,7 +102,7 @@ export default {
       switch (this.currentView) {
         case 'inventory': return ViewInventory
         case 'addProduct': return AddProduct
-        case 'manageProduct': return ManageProduct
+        case 'manageOrders': return ManageOrders
         case 'categories': return Categories
         default: return ViewInventory
       }
