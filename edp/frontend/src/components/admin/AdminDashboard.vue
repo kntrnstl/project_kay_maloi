@@ -141,10 +141,14 @@ export default {
 
 <style scoped>
 /* ---------------- Base Layout ---------------- */
+/* ---------------- Fonts ---------------- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+/* ---------------- Base Layout ---------------- */
 .admin-dashboard {
   font-family: 'Inter', sans-serif;
-  background: linear-gradient(160deg, #0d2b1f, #071815);
-  color: #fff;
+  background: #f5f7f6; /* light background to contrast dark green theme */
+  color: #071815;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -156,9 +160,8 @@ export default {
   align-items: center;
   justify-content: space-between;
   padding: 20px 35px;
-  background: rgba(8, 24, 18, 0.9);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 3px 10px rgba(0,255,128,0.2);
+  background: #041c12; /* dark green */
+  backdrop-filter: blur(10px);
   border-bottom: 2px solid #0a3c2b;
 }
 
@@ -169,7 +172,8 @@ export default {
 }
 
 .admin-header h1 {
-  font-size: 22px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 24px;
   font-weight: 700;
   color: #00ffcc;
   margin: 0;
@@ -198,22 +202,21 @@ export default {
 .dashboard-body {
   display: flex;
   flex: 1;
-  height: calc(100vh - 70px); /* full viewport minus header */
+  height: calc(100vh - 70px);
   overflow: hidden;
 }
 
 /* ---------------- Sidebar ---------------- */
 .sidebar {
   width: 220px;
-  background: rgba(8, 24, 18, 0.85);
-  backdrop-filter: blur(12px);
+  background: #041c12;
   padding: 25px 20px;
-  box-shadow: 0 0 20px rgba(0,255,128,0.15);
   transition: width 0.3s ease;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  border-right: 1px solid #0a3c2b;
 }
 
 .sidebar.closed {
@@ -231,14 +234,17 @@ export default {
   align-items: center;
   padding: 12px 15px;
   margin-bottom: 12px;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
   transition: all 0.2s ease;
+  color: #00ffcc;
 }
 
 .sidebar li:hover {
   background: linear-gradient(135deg, #0a3c2b, #1a5e46);
-  color: #00ffcc;
+  color: #fff;
 }
 
 .sidebar li.active {
@@ -284,21 +290,123 @@ export default {
   flex: 1;
   display: flex;
   justify-content: center;
-  padding: 20px;
-  overflow:hidden;
+  padding: 30px;
+  overflow: auto;
 }
 
 /* ---------------- Content Card ---------------- */
 .content-card {
   max-width: 1200px;
-  max-height: 100%;
-  overflow: hidden;
-  background: rgba(8, 24, 18, 0.9);
-  backdrop-filter: blur(12px);
-  border-radius: 20px;
-  padding: 25px;
-  box-shadow: 0 10px 25px rgba(0,255,128,0.1);
   width: 100%;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  font-family: 'Inter', sans-serif;
+  color: #071815;
+}
+
+/* ---------------- Add Product Inputs ---------------- */
+.add-product-container input,
+.add-product-container textarea,
+.add-product-container select {
+  width: 100%;
+  padding: 12px 15px;
+  margin: 10px 0;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 255, 128, 0.3);
+  background: rgba(0, 255, 128, 0.05);
+  color: #071815;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s ease;
+  height: 45px;
+  box-sizing: border-box;
+}
+.add-product-container textarea {
+  height: 90px;
+  resize: none;
+}
+.add-product-container input:focus,
+.add-product-container textarea:focus,
+.add-product-container select:focus {
+  border-color: #00ffcc;
+  background: rgba(0, 255, 128, 0.1);
+  box-shadow: 0 0 10px rgba(0, 255, 128, 0.3);
+}
+
+/* ---------------- Sizes Inputs ---------------- */
+.sizes-inputs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.sizes-inputs input {
+  flex: 1;
+  height: 45px;
+}
+.sizes-inputs button {
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #00ffcc, #00cc99);
+  color: #071815;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  height: 45px;
+}
+.sizes-inputs button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 255, 128, 0.3);
+}
+
+/* ---------------- Sizes List ---------------- */
+.add-product-container ul {
+  padding-left: 0;
+  list-style: none;
+  margin-top: 10px;
+}
+.add-product-container ul li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+.add-product-container ul li button {
+  padding: 3px 8px;
+  font-size: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #ff4d4d;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.add-product-container ul li button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(255, 77, 77, 0.3);
+}
+
+/* ---------------- Submit Button ---------------- */
+.submit-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #00ffcc, #00cc99);
+  color: #071815;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  height: 45px;
+}
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 255, 128, 0.3);
 }
 
 /* ---------------- Fast Fade + Slide Transition ---------------- */
@@ -328,4 +436,5 @@ export default {
   }
   .sidebar.open { transform: translateX(0); }
 }
+
 </style>
