@@ -1,7 +1,6 @@
 <template>
   <div class="category-container">
 
-    <!-- Notification -->
     <div 
       class="custom-notif"
       :class="[{ show: notification.show }, notification.type]"
@@ -9,31 +8,31 @@
       {{ notification.message }}
     </div>
 
-    <!-- Confirmation Modal -->
     <div v-if="confirmDelete.show" class="confirm-overlay">
       <div class="confirm-box">
-        <p>Are you sure you want to delete <strong>{{ confirmDelete.name }}</strong>?</p>
+        <p class="confirm-message">Are you sure you want to delete <strong>{{ confirmDelete.name }}</strong>? This cannot be undone.</p>
         <div class="confirm-actions">
-          <button @click="confirmDeleteCategory" class="confirm-btn">Yes</button>
+          <button @click="confirmDeleteCategory" class="confirm-btn">Yes, Delete</button>
           <button @click="cancelDelete" class="cancel-btn">Cancel</button>
         </div>
       </div>
     </div>
 
-    <h2>Categories</h2>
+    <h2 class="page-title">Manage Categories 🏷️</h2>
 
-    <!-- Add Category Card -->
     <div class="add-card">
       <input 
         v-model="newCategory"
         type="text"
-        placeholder="Enter new category"
-        class="input"
+        placeholder="Enter new category name"
+        class="input-modern"
+        @keyup.enter="addCategory"
       />
-      <button class="btn-add" @click="addCategory">Add</button>
+      <button class="btn-add-modern" @click="addCategory">
+        + Add Category
+      </button>
     </div>
 
-    <!-- Category List -->
     <div class="category-list">
       <div 
         class="category-card"
@@ -45,13 +44,17 @@
           @blur="updateCategory(cat)"
           class="category-input"
         />
-        <button class="btn-delete" @click="prepareDelete(cat.id, cat.name)">
-          ✕
+        <button 
+            class="btn-delete-modern icon-btn" 
+            @click="prepareDelete(cat.id, cat.name)"
+            title="Delete Category"
+        >
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 5v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5M10 11v6m4-6v6m-6-12h8m-11 0h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
       </div>
 
       <p v-if="categories.length === 0" class="empty">
-        No categories found
+        No categories found. Start by adding one above.
       </p>
     </div>
 
@@ -127,6 +130,8 @@ export default {
     async updateCategory(cat) {
       if (!cat.name.trim()) {
         this.showNotif("error", "Category cannot be empty");
+        // Re-fetch to revert local changes if possible, or handle error state
+        this.fetchCategories(); 
         return;
       }
 
@@ -174,117 +179,243 @@ export default {
 </script>
 
 <style scoped>
-/* Existing styles remain */
-.category-container { max-width: 900px; margin:auto; padding:25px; background:white; border-radius:20px; box-shadow:0 10px 25px rgba(0,0,0,0.1); font-family:"Inter",sans-serif; }
-h2 { text-align:center; font-weight:700; color:#0a3c2b; margin-bottom:25px; }
-.add-card { display:flex; gap:10px; margin-bottom:25px; }
-.input { flex:1; padding:12px; border-radius:10px; border:1px solid #d1e8df; outline:none; font-size:15px; }
-.input:focus { border-color:#1a5e46; }
-.btn-add { background:linear-gradient(135deg,#0cb67a,#066b42); color:white; padding:11px 20px; border:none; border-radius:10px; cursor:pointer; font-weight:600; transition:0.3s; }
-.btn-add:hover { transform:translateY(-2px); box-shadow:0 5px 12px rgba(0,150,90,0.3); }
-.category-list { display:flex; flex-direction:column; gap:12px; }
-.category-card { display:flex; align-items:center; padding:12px 15px; background:#f8fdfb; border:1px solid #d6eee4; border-radius:12px; justify-content:space-between; }
-.category-input { flex:1; padding:10px; border:none; background:transparent; font-size:15px; outline:none; }
-.category-input:focus { border-bottom:1px solid #0a3c2b; }
-.btn-delete { background:#ff5252; color:white; border:none; padding:6px 12px; border-radius:8px; font-size:13px; cursor:pointer; transition:0.3s; }
-.btn-delete:hover { background:#d62828; }
-.empty { text-align:center; font-style:italic; padding-top:10px; color:#777; }
-.custom-notif { position:fixed; top:-80px; left:50%; transform:translateX(-50%); padding:14px 23px; border-radius:12px; font-weight:600; color:white; opacity:0; pointer-events:none; transition:all 0.35s ease; z-index:9999; }
-.custom-notif.show { top:20px; opacity:1; }
-.custom-notif.success { background:linear-gradient(135deg,#00b061,#00773d); }
-.custom-notif.error { background:linear-gradient(135deg,#d62828,#9b1d1d); }
+/* ---------------- Color Palette ---------------- */
+/* Primary/Action: #1A5E46 (Deep Forest Green) */
+/* Secondary Accent: #00CC99 (Vibrant Mint) */
+/* Background: #f5fdf9 (Very Pale Mint) */
+/* Red: #d62828 */
 
-/* Confirmation Modal */
-.confirm-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.4); display:flex; justify-content:center; align-items:center; z-index:10000; }
-.confirm-box { background:white; padding:25px 30px; border-radius:20px; max-width:400px; text-align:center; box-shadow:0 10px 25px rgba(0,0,0,0.25); }
-.confirm-box p { margin-bottom:20px; font-weight:600; color:#071815; }
-.confirm-actions { display:flex; justify-content:space-around; }
-.confirm-btn { padding:10px 20px; border-radius:12px; border:none; background:linear-gradient(135deg,#00b061,#00773d); color:#fff; font-weight:600; cursor:pointer; transition:all 0.3s ease; }
-.confirm-btn:hover { transform:translateY(-2px); box-shadow:0 6px 15px rgba(0,255,150,0.3); }
-.cancel-btn { padding:10px 20px; border-radius:12px; border:none; background:linear-gradient(135deg,#d62828,#9b1d1d); color:#fff; font-weight:600; cursor:pointer; transition:all 0.3s ease; }
-.cancel-btn:hover { transform:translateY(-2px); box-shadow:0 6px 15px rgba(255,0,0,0.3); }
+/* ---------------- Base Container ---------------- */
+.category-container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 35px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    font-family: 'Inter', sans-serif;
+    color: #1A5E46;
+}
 
-.category-card {
-  display: flex;
-  align-items: center;
-  padding: 12px 15px;
-  background: #f8fdfb;
-  border: 1px solid #d6eee4;
-  border-radius: 12px;
-  justify-content: space-between;
-  transition: all 0.3s ease; /* added */
+/* ---------------- Header ---------------- */
+.page-title {
+    color: #1A5E46;
+    font-weight: 800;
+    font-size: 28px;
+    margin-bottom: 30px;
+    text-align: center;
+    letter-spacing: -0.2px;
+}
+
+/* ---------------- Add Card (Input/Button) ---------------- */
+.add-card { 
+    display: flex; 
+    gap: 15px; 
+    margin-bottom: 35px; 
+}
+
+.input-modern { 
+    flex: 1; 
+    padding: 14px 18px; 
+    border-radius: 12px; 
+    border: 1px solid #cce8dd; 
+    outline: none; 
+    font-size: 16px; 
+    color: #333;
+    background: #f5fdf9;
+    transition: all 0.3s ease;
+}
+
+.input-modern:focus { 
+    border-color: #00CC99; 
+    box-shadow: 0 0 0 3px rgba(0, 204, 153, 0.2); 
+    background: #ffffff;
+}
+
+.btn-add-modern { 
+    background: #1A5E46; /* Deep Green Solid for primary action */
+    color: white; 
+    padding: 14px 25px; 
+    border: none; 
+    border-radius: 12px; 
+    cursor: pointer; 
+    font-weight: 600; 
+    font-size: 16px;
+    transition: all 0.3s ease; 
+}
+
+.btn-add-modern:hover { 
+    background: #00CC99; 
+    transform: translateY(-2px); 
+    box-shadow: 0 8px 18px rgba(0, 204, 153, 0.3); 
+}
+
+/* ---------------- Category List ---------------- */
+.category-list { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px; 
+}
+
+.category-card { 
+    display: flex; 
+    align-items: center; 
+    padding: 8px 15px 8px 20px;
+    background: #fcfcfc;
+    border: 1px solid #e0f5ea; 
+    border-radius: 12px; 
+    justify-content: space-between; 
+    transition: all 0.3s ease;
 }
 
 .category-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  border-color: #1a5e46;
-  background: #f0fff6;
-}
-.input {
-  flex: 1;
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid #cce8dd;
-  outline: none;
-  font-size: 15px;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-  transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-color: #00CC99;
+    background: #f0fff6;
 }
 
-.input:focus {
-  border-color: #0a3c2b;
-  box-shadow: 0 0 8px rgba(0, 180, 97, 0.3);
+.category-input { 
+    flex: 1; 
+    padding: 8px 0; /* Padding inside the card padding */
+    border: none; 
+    background: transparent; 
+    font-size: 16px; 
+    font-weight: 500;
+    color: #1A5E46;
+    outline: none; 
 }
 
-.btn-add {
-  background: linear-gradient(135deg, #00d375, #00773d);
-  padding: 11px 20px;
+.category-input:focus { 
+    /* Use a light highlight for active editing */
+    border-bottom: 2px solid #00CC99;
+}
+
+.empty { 
+    text-align: center; 
+    font-style: italic; 
+    padding-top: 20px; 
+    color: #777; 
+}
+
+/* ---------------- Delete Button (Icon Style) ---------------- */
+.icon-btn {
+    background: none;
+    border: 2px solid transparent;
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.btn-delete-modern {
+    color: #d62828; /* Red icon color */
+}
+.btn-delete-modern:hover {
+    background: rgba(255, 0, 0, 0.1);
+    border-color: #d62828;
+}
+
+/* ---------------- Notifications ---------------- */
+.custom-notif {
+  position: fixed;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 15px 25px;
   border-radius: 12px;
   font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-add:hover {
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 8px 20px rgba(0, 180, 97, 0.3);
-}
-.btn-delete {
-  background: #ff6b6b;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-delete:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 5px 15px rgba(255, 80, 80, 0.3);
-}
-.confirm-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10000;
+  font-size: 15px;
+  color: white;
   opacity: 0;
-  animation: fadeIn 0.25s forwards;
+  pointer-events: none;
+  transition: all 0.35s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  z-index: 9999;
+}
+.custom-notif.show {
+  top: 30px;
+  opacity: 1;
+  pointer-events: auto;
+}
+.custom-notif.success {
+  background: #00CC99;
+  box-shadow: 0 5px 15px rgba(0, 204, 153, 0.3);
+  color: #1A5E46;
+}
+.custom-notif.error {
+  background: #d62828;
+  box-shadow: 0 5px 15px rgba(214, 40, 40, 0.3);
+}
+
+/* ---------------- Confirmation Modal ---------------- */
+.confirm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    opacity: 0;
+    animation: fadeIn 0.25s forwards;
 }
 
 .confirm-box {
-  background: white;
-  padding: 25px 30px;
-  border-radius: 20px;
-  max-width: 400px;
-  text-align: center;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-  transform: scale(0.95);
-  animation: scaleUp 0.25s forwards;
+    background: white;
+    padding: 30px 40px;
+    border-radius: 15px;
+    max-width: 450px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    transform: scale(0.95);
+    animation: scaleUp 0.25s forwards;
+}
+
+.confirm-message {
+    font-size: 18px;
+    margin-bottom: 25px;
+    font-weight: 500;
+    color: #333;
+}
+
+.confirm-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+.confirm-btn, .cancel-btn {
+    padding: 12px 25px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 120px;
+}
+.confirm-btn {
+    background: #d62828; 
+    color: #fff;
+}
+.confirm-btn:hover {
+    background: #b82323;
+    transform: translateY(-1px);
+}
+.cancel-btn {
+    background: #f0f0f0;
+    color: #555;
+}
+.cancel-btn:hover {
+    background: #e0e0e0;
+    transform: translateY(-1px);
 }
 
 @keyframes fadeIn {
@@ -293,8 +424,26 @@ h2 { text-align:center; font-weight:700; color:#0a3c2b; margin-bottom:25px; }
 @keyframes scaleUp {
   to { transform: scale(1); }
 }
-.category-container {
-  background: linear-gradient(145deg, #fdfdfd, #f0fff6);
-}
 
+/* ---------------- Responsive ---------------- */
+@media (max-width: 550px) {
+    .category-container {
+        margin: 20px 15px;
+        padding: 25px;
+    }
+    .add-card {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .btn-add-modern {
+        width: 100%;
+    }
+    .confirm-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .confirm-btn, .cancel-btn {
+        min-width: 100%;
+    }
+}
 </style>

@@ -1,8 +1,10 @@
 <template>
   <div class="contact-view">
-    <h2>Contact Us</h2>
+    <div class="header-container">
+      <h2 class="title">Get in Touch <span class="accent-text">24/7</span></h2>
+      <p class="subtitle">Have a question or feedback? Our dedicated team is ready to assist you. Fill out the form below.</p>
+    </div>
 
-    <!-- Custom Notification -->
     <div
       class="custom-notif"
       :class="[{ show: notification.show }, notification.type]"
@@ -11,23 +13,29 @@
     </div>
 
     <form @submit.prevent="submitForm" class="contact-form">
-      <div class="form-group">
-        <input v-model="name" placeholder="Your Name" required />
+      <div class="row-group">
+        <div class="form-field">
+          <input v-model="name" placeholder="Your Name" required class="input-soft-ui" />
+        </div>
+
+        <div class="form-field">
+          <input v-model="email" type="email" placeholder="Your Email" required class="input-soft-ui" />
+        </div>
       </div>
 
-      <div class="form-group">
-        <input v-model="email" type="email" placeholder="Your Email" required />
+      <div class="form-field full-width">
+        <textarea v-model="message" placeholder="Your Detailed Message" required class="input-soft-ui"></textarea>
       </div>
 
-      <div class="form-group">
-        <textarea v-model="message" placeholder="Your Message" required></textarea>
-      </div>
-
-      <!-- Button aligned perfectly with inputs -->
-      <div class="form-group">
-        <button type="submit" class="btn-submit">Send Message</button>
+      <div class="form-field full-width">
+        <button type="submit" class="btn-submit-soft-ui">Send Message</button>
       </div>
     </form>
+    
+    <div class="contact-info">
+      <p>Or reach us directly:</p>
+      <p class="email-link">support@myshop.com</p>
+    </div>
   </div>
 </template>
 
@@ -43,6 +51,7 @@ export default {
         message: '',
         type: 'success',
       },
+      notificationTimer: null
     }
   },
   methods: {
@@ -50,7 +59,9 @@ export default {
       this.notification.message = message
       this.notification.type = type
       this.notification.show = true
-      setTimeout(() => (this.notification.show = false), 3000)
+      
+      clearTimeout(this.notificationTimer);
+      this.notificationTimer = setTimeout(() => (this.notification.show = false), 3000)
     },
     submitForm() {
       if (!this.name || !this.email || !this.message) {
@@ -58,129 +69,202 @@ export default {
         return
       }
 
-      this.showNotification(`Thank you ${this.name}, your message has been sent!`)
-      this.name = ''
-      this.email = ''
-      this.message = ''
+      // Simulate API call success
+      this.showNotification(`Thank you ${this.name}, your message has been sent successfully!`, 'success')
+      this.name = '';
+      this.email = '';
+      this.message = '';
     },
   },
 }
 </script>
 
 <style scoped>
+/* ---------------- Custom Color Palette ---------------- */
+/* Primary Dark Color: #0f3d2e (Dark Forest Green) */
+/* Complimentary Light Color (Input BG): #f1fcf8 (Desaturated Mint) */
+/* Accent: #00ffcc (Bright Mint/Aqua) */
+/* Background: #ecf0f3 (Very Light Gray) */
+
+/* ---------------- Core Container ---------------- */
 .contact-view {
-  max-width: 600px;
-  margin: 60px auto;
-  padding: 40px 30px;
-  background: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  margin: 80px auto;
+  padding: 50px;
+  background: #ffffff; 
+  border-radius: 25px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.02); 
   font-family: 'Inter', sans-serif;
+  color: #0f3d2e; /* Using the Dark Green for primary text */
 }
 
-.contact-view h2 {
+/* ---------------- Header Styling ---------------- */
+.header-container {
   text-align: center;
-  font-size: 28px;
-  margin-bottom: 35px;
-  color: #0f3d2e;
-  font-weight: 700;
+  margin-bottom: 40px;
 }
 
-/* Form styling */
+.title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 38px;
+  margin-bottom: 10px;
+  color: #0f3d2e; /* Dark Green Primary */
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.accent-text {
+    color: #00ffcc; /* Mint accent for pop */
+}
+
+.subtitle {
+  font-size: 17px;
+  color: #555;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ---------------- Form Layout ADJUSTMENTS ---------------- */
 .contact-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  width: 100%;
+  gap: 25px; 
 }
 
-.form-group {
-  width: 100%;
-  max-width: 420px;
-  margin: 0 auto; /* center input/button */
+.row-group {
+  display: flex;
+  /* Increased gap for more separation */
+  gap: 30px; 
 }
 
-.form-group input,
-.form-group textarea {
+.form-field {
+  flex: 1;
+}
+
+/* ---------------- Input Styling (Soft UI / Light Neumorphism) ---------------- */
+.input-soft-ui {
+  box-sizing: border-box; /* Crucial for safe layout */
   width: 100%;
-  padding: 14px 18px;
-  border-radius: 14px;
-  border: 1px solid #ddd;
-  font-size: 15px;
+  padding: 16px 20px;
+  border-radius: 15px;
+  font-size: 16px;
+  background: #f1fcf8; /* Complimentary Light Mint Background */
+  color: #0f3d2e; /* Dark Green input text */
+  border: none;
   transition: all 0.3s ease;
-  box-shadow: inset 0 1px 4px rgba(0,0,0,0.05);
+  
+  /* Soft inner shadow */
+  box-shadow: 
+    inset 3px 3px 6px #d1d9e6, 
+    inset -3px -3px 6px #ffffff;
 }
 
-.form-group input:focus,
-.form-group textarea:focus {
+.input-soft-ui::placeholder {
+  color: #a0a0a0;
+  font-weight: 400;
+}
+
+.input-soft-ui:focus {
   outline: none;
-  border-color: #7bf2b3;
-  box-shadow: 0 0 12px rgba(123, 242, 179, 0.3);
+  background: #ffffff; 
+  /* Focus ring uses the Dark Green and Mint accent */
+  box-shadow: 0 0 0 3px #0f3d2e, 0 0 0 6px rgba(0, 255, 204, 0.3); 
 }
 
-textarea {
-  min-height: 140px;
+textarea.input-soft-ui {
+  min-height: 180px; 
   resize: vertical;
 }
 
-/* Button styling */
-.btn-submit {
-  width: 110%; /* ensures button matches input width */
-  padding: 14px 0;
-  font-size: 16px;
-  font-weight: 600;
-  border-radius: 14px;
-  border: none;
-  background: linear-gradient(135deg, #0f3d2e, #145943);
-  color: #fff;
+/* ---------------- Button Styling (Prominent Mint) ---------------- */
+.btn-submit-soft-ui {
+  width: 100%;
+  padding: 18px 0;
+  font-size: 18px;
+  font-weight: 700;
+  border-radius: 15px;
+  border-color:black;
+  /* High contrast mint background */
+  background: white; 
+  color: #0f3d2e; /* Dark Green text on mint button */
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease; 
+  letter-spacing: 0.5px;
+  box-shadow: 0 5px 15px rgba(0, 255, 204, 0.2); 
 }
 
-.btn-submit:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 77, 46, 0.3);
+.btn-submit-soft-ui:hover {
+  transform: translateY(-3px); /* Lift */
+  background: #0f3d2e;
+  color:white;
+  border-color:white;
 }
 
-/* Notifications */
+/* ---------------- Footer Info ---------------- */
+.contact-info {
+    text-align: center;
+    margin-top: 50px;
+    padding-top: 25px;
+    border-top: 1px solid #e0e0e0;
+}
+.contact-info p {
+    color: #777;
+    font-size: 15px;
+}
+.email-link {
+    font-size: 18px;
+    font-weight: 600;
+    color: #0f3d2e; /* Dark Green link color */
+    margin-top: 5px;
+}
+
+/* ---------------- Notifications ---------------- */
 .custom-notif {
   position: fixed;
   top: -80px;
   left: 50%;
   transform: translateX(-50%);
   padding: 16px 28px;
-  border-radius: 14px;
+  border-radius: 10px;
   font-weight: 600;
   font-size: 15px;
   color: #fff;
   opacity: 0;
   pointer-events: none;
-  transition: all 0.35s ease;
+  transition: all 0.35s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   z-index: 9999;
 }
 .custom-notif.show {
-  top: 20px;
+  top: 30px;
   opacity: 1;
   pointer-events: auto;
 }
 .custom-notif.success {
-  background: linear-gradient(135deg, #00b061, #00773d);
-  box-shadow: 0 5px 15px rgba(0, 255, 150, 0.3);
+  background: #00ffcc; 
+  color: #0f3d2e; /* Dark Green text for high contrast success */
+  box-shadow: 0 5px 15px rgba(0, 255, 150, 0.4);
 }
 .custom-notif.error {
-  background: linear-gradient(135deg, #d62828, #9b1d1d);
-  box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+  background: #e63946;
+  color: white; 
+  box-shadow: 0 5px 15px rgba(230,57,70,0.4);
 }
 
-/* Responsive */
-@media (max-width: 640px) {
+/* ---------------- Responsive ---------------- */
+@media (max-width: 768px) {
   .contact-view {
-    margin: 30px 20px;
-    padding: 30px 20px;
+    margin: 40px 20px;
+    padding: 30px;
+  }
+  
+  .row-group {
+    /* Ensure fields stack cleanly on mobile */
+    flex-direction: column;
+    gap: 20px;
   }
 
-  .contact-view h2 {
-    font-size: 24px;
+  .title {
+    font-size: 32px;
   }
 }
 </style>

@@ -267,4 +267,16 @@ export default {
 .confirm-btn:hover { transform: translateY(-2px) scale(1.03); box-shadow:0 6px 18px rgba(0,255,150,0.3);}
 .cancel-btn { padding:10px 22px; border-radius:12px; border:none; background: linear-gradient(135deg,#d62828,#9b1d1d); color:#fff; font-weight:600; cursor:pointer; transition:all 0.3s ease;}
 .cancel-btn:hover { transform: translateY(-2px) scale(1.03); box-shadow:0 6px 18px rgba(255,0,0,0.3);}
+
+/* ---------------- Slide-Fade for Sidebar Labels ---------------- */
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: opacity 0.2s, transform 0.2s;
+}
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  opacity: 0;
+  transform: translateX(-12px);
+}
+
 </style>
