@@ -9,6 +9,9 @@ const productAdminRouter = require('./routes/admin/products');
 const categoryAdminRouter = require('./routes/admin/categories');
 const publicProductsRouter = require('./routes/products');
 const cartRouter = require('./routes/cart');
+const ordersRouter = require('./routes/orders');
+const adminOrdersRouter = require('./routes/admin/orders');
+
 
 const app = express();
 
@@ -26,6 +29,11 @@ app.use('/api/admin/products', productAdminRouter);
 app.use('/api/admin/categories', categoryAdminRouter);
 app.use('/api/products', publicProductsRouter);
 app.use('/api/cart', cartRouter);
+app.use('/api/orders', ordersRouter);
+app.use('/api/admin/orders', adminOrdersRouter);
+app.use("/api/orders/my", require("./routes/myOrders"));
+
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Backend running at http://localhost:${PORT}`));
