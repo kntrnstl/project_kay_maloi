@@ -108,7 +108,10 @@ export default {
       message: '',
       messageType: 'success',
       images: [img1, img2, img3, img4, img5],
-      currentImage: 0
+      currentImage: 0,
+       isVerifying: false,
+    verificationCode: "",
+    emailForVerify: "",
     };
   },
   mounted() {
@@ -127,21 +130,30 @@ export default {
         this.currentImage = (this.currentImage + 1) % this.images.length;
       }, 3000);
     },
-    async register() {
-      try {
-        const res = await axios.post('/api/auth/register', {
-          username: this.username,
-          email: this.email,
-          password: this.password
-        });
-        this.message = res.data.message;
-        this.messageType = 'success';
-        this.toggleForm();
-      } catch (err) {
-        this.message = err.response?.data?.message || 'Error registering';
-        this.messageType = 'error';
-      }
-    },
+   async register() {
+  try {
+    const res = await axios.post('/api/auth/register', {
+      username: this.username,
+      email: this.email,
+      password: this.password
+    });
+
+    this.message = "Verification code sent to your email!";
+    this.messageType = "success";
+
+    // Redirect to verify page and save email
+    localStorage.setItem("pendingEmail", this.email);
+
+    setTimeout(() => {
+      this.router.push("/verify");
+    }, 800);
+
+  } catch (err) {
+    this.message = err.response?.data?.message || 'Error registering';
+    this.messageType = 'error';
+  }
+},
+
     async login() {
       try {
         const res = await axios.post('/api/auth/login', {
