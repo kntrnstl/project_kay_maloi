@@ -4,7 +4,8 @@
       <div class="hero-content">
         <h1>Welcome to MyShop!</h1>
         <p class="tagline">Discover our amazing products and exclusive offers.</p>
-        <button class="btn-shop-now" @click="goToProducts">
+        <!-- The @click="goToProducts" ensures navigation to the products page -->
+        <button class="btn-shop-now" @click="$emit('navigate', 'products')">
           Shop Now &rarr;
         </button>
       </div>
@@ -47,7 +48,10 @@
         <div class="promo-card">
           <h3>New Arrivals!</h3>
           <p>Explore the latest additions to our collection. Don't miss out on fresh styles.</p>
-          <button class="btn-view-all" @click="goToProducts">View All</button>
+          <!-- The @click="goToProducts" ensures navigation to the products page -->
+          <button class="btn-view-all" @click="$emit('navigate', 'products')">
+            View All
+          </button>
         </div>
       </section>
     </div>
@@ -56,7 +60,6 @@
 
 <script>
 import axios from 'axios'
-
 export default {
   data() {
     return {
@@ -64,12 +67,9 @@ export default {
     }
   },
   methods: {
+    // Change view to ProductsView
     goToProducts() {
-      if (this.$router) {
-        this.$router.push('/products');
-      } else {
-        console.warn('Vue Router instance not found. Cannot navigate.');
-      }
+      this.$emit('navigate', 'products'); // emit to parent to change view
     }
   },
   async created() {
@@ -79,13 +79,14 @@ export default {
         headers: { Authorization: `Bearer ${token}` } 
       })
       const productsWithPrice = res.data.filter(p => p.price !== undefined && p.price !== null);
-      this.featuredProducts = productsWithPrice.slice(0, 4) 
+      this.featuredProducts = productsWithPrice.slice(0, 4);
     } catch (err) {
       console.error('Error fetching products:', err)
       this.featuredProducts = [];
     }
   }
 }
+
 </script>
 
 <style scoped>
@@ -95,7 +96,6 @@ export default {
   background: #f5f7f6;
   color: #071815;
   border-radius: 10px;
-  /* Removed border-radius here as it should be on the header/footer, not the view itself */
 }
 
 /* Container now defines the max-width and center alignment */
@@ -121,7 +121,6 @@ export default {
   text-align: center;
   color: white;
   border-radius: 10px;
-  /* Removed margin-bottom here, spacing is now managed by .main-content padding-top */
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 .hero-content {
@@ -159,7 +158,6 @@ export default {
 
 /* ---------------- Featured Products ---------------- */
 .featured-products {
-  /* Removed container class from template, so ensure padding is handled by the wrapper */
   margin-bottom: 50px; 
 }
 .section-title {
@@ -275,7 +273,6 @@ export default {
 .promo-card {
   background: linear-gradient(135deg, #0a3c2b, #041c12);
   color: white;
-  /* Removed unnecessary margin: 10px from the card itself */
   padding: 40px;
   border-radius: 10px;
   text-align: center;

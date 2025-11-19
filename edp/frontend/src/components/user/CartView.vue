@@ -6,7 +6,7 @@
     </div>
 
     <div class="cart-content">
-      <!-- Cart Items Table: Uses original table structure wrapped in new card design -->
+      <!-- Cart Items Table -->
       <div v-if="cart.length" class="cart-card">
         <table>
           <thead>
@@ -23,15 +23,12 @@
             <tr v-for="item in cart" :key="item.id">
               <td>{{ item.name }}</td>
               <td>{{ item.size }}</td>
-              <!-- Using original price display -->
               <td>₱{{ item.price }}</td>
               <td class="qty-col">
-                <!-- Using original input logic -->
                 <input type="number" v-model.number="item.quantity" min="1" @change="updateQuantity(item)" />
               </td>
               <td>₱{{ (item.price * item.quantity).toFixed(2) }}</td>
               <td>
-                <!-- Using original remove logic with styled class -->
                 <button @click="removeItem(item.id)" class="remove-btn">X</button>
               </td>
             </tr>
@@ -39,26 +36,27 @@
         </table>
       </div>
 
-      <!-- Empty Cart State -->
+      <!-- Empty Cart -->
       <div v-else class="empty-cart">
         <p>Your cart is empty. Time to find some great products!</p>
-        <!-- FIXED: Replaced router-link with a button using a method -->
-        <router-link to="/products" class="btn-shop-now">Go to Shop</router-link>
+        <!-- Event-based navigation -->
+              <button class="btn-shop-now" @click="$emit('navigate', 'products')">
+                Continue Shopping
+              </button>
       </div>
 
-      <!-- Cart Footer: Total and Checkout -->
+      <!-- Cart Footer -->
       <div v-if="cart.length" class="cart-footer">
         <p class="total-price">
           Total: <span>₱{{ totalPrice.toFixed(2) }}</span>
         </p>
-        <!-- Using original checkout logic with styled button -->
         <button @click="checkout" :disabled="!cart.length" class="checkout-btn">
           Checkout
         </button>
       </div>
     </div>
 
-    <!-- Custom Notification Element (for replacing alert()) -->
+    <!-- Notification -->
     <div :class="['custom-notif', notification.type, { show: notification.show }]">
       {{ notification.message }}
     </div>
@@ -71,52 +69,34 @@ import axios from 'axios'
 export default {
   data() {
     return {
-      // Original data state
       cart: [],
-      // ADDED: Notification state (required to replace alert())
       notification: {
         show: false,
         message: '',
-        type: 'success' // 'success' or 'error'
+        type: 'success'
       },
       notificationTimer: null
     }
   },
   computed: {
     totalPrice() {
-      // Original computed logic (must be kept)
       return this.cart.reduce((acc, item) => acc + item.price * item.quantity, 0)
     }
   },
   methods: {
-    // NEW: Method to handle navigation without explicit routing
-    goToProducts() {
-      // This emits an event. Your main application component should listen
-      // for this event and handle the actual navigation (e.g., this.$router.push('/products')
-      // or changing the active component).
-      this.$emit('navigate-to-products');
-      this.showNotification('Navigating to the product shop...', 'success');
-      console.log('--- CART VIEW: Emitting "navigate-to-products" event. Parent component must handle navigation. ---');
-    },
-
-    // ADDED: Notification method (required to replace alert())
     showNotification(message, type = 'success') {
       this.notification.message = message
       this.notification.type = type
       this.notification.show = true
-
       clearTimeout(this.notificationTimer)
       this.notificationTimer = setTimeout(() => {
         this.notification.show = false
       }, 3000)
     },
-    
-    // Original fetchCart logic (must be kept)
     async fetchCart() {
       try {
         const token = localStorage.getItem('token')
         if (!token) return
-
         const res = await axios.get('/api/cart', {
           headers: { Authorization: `Bearer ${token}` }
         })
@@ -128,16 +108,12 @@ export default {
     async updateQuantity(item) {
       try {
         const token = localStorage.getItem('token')
-        await axios.put(
-          `/api/cart/${item.id}`,
-          { quantity: item.quantity },
-          { headers: { Authorization: `Bearer ${token}` } }
-        )
+        await axios.put(`/api/cart/${item.id}`, { quantity: item.quantity }, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
         await this.fetchCart()
-        // Replaced alert()
         this.showNotification('Quantity updated successfully.', 'success')
-      } catch (err) {
-        // Replaced alert()
+      } catch {
         this.showNotification('Failed to update quantity.', 'error')
       }
     },
@@ -148,39 +124,30 @@ export default {
           headers: { Authorization: `Bearer ${token}` }
         })
         await this.fetchCart()
-        // Replaced alert()
         this.showNotification('Item removed from cart.', 'error')
-      } catch (err) {
-        // Replaced alert()
+      } catch {
         this.showNotification('Failed to remove item.', 'error')
       }
     },
     async checkout() {
       try {
         const token = localStorage.getItem('token')
-        // Replaced alert()
         if (!token) return this.showNotification('Please login first.', 'error')
 
-        await axios.post(
-          '/api/orders',
-          {
-            items: this.cart.map(item => ({
-              product_id: item.product_id,
-              size_id: item.size_id,
-              quantity: item.quantity,
-              price: item.price
-            })),
-            total: this.totalPrice
-          },
-          { headers: { Authorization: `Bearer ${token}` } }
-        )
+        await axios.post('/api/orders', {
+          items: this.cart.map(item => ({
+            product_id: item.product_id,
+            size_id: item.size_id,
+            quantity: item.quantity,
+            price: item.price
+          })),
+          total: this.totalPrice
+        }, { headers: { Authorization: `Bearer ${token}` } })
 
-        // Replaced alert()
         this.showNotification('Order placed successfully!', 'success')
         this.cart = []
         await this.fetchCart()
       } catch (err) {
-        // Replaced alert()
         const message = err.response?.data?.message || 'Checkout failed.'
         this.showNotification(message, 'error')
       }
@@ -191,6 +158,7 @@ export default {
   }
 }
 </script>
+
 
 <style scoped>
 /* ---------------- Base Styling ---------------- */
@@ -366,23 +334,28 @@ export default {
   color: #071815;
   margin-bottom: 20px;
 }
-/* Reusing the shop now button style (now applied to a button) */
+
+
+/* Reuse the HomeView button style */
 .btn-shop-now {
-  padding: 12px 25px;
-  background: linear-gradient(135deg, #00ffcc, #00cc99);
-  color: #071815;
-  font-weight: 600;
+  padding: 10px 28px; /* slightly smaller than 14px 35px */
+  background: #00ffcc;
+  color: #041c12;
+  font-weight: 700;
   border: none;
-  border-radius: 12px;
+  border-radius: 10px; /* slightly smaller radius */
   cursor: pointer;
   transition: all 0.3s ease;
-  text-decoration: none; /* For router-link */
-  display: inline-block;
+  font-size: 1rem; /* slightly smaller font */
+  letter-spacing: 0.4px;
 }
 .btn-shop-now:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(0, 255, 128, 0.3);
+  transform: translateY(-2px); /* slightly less movement */
+  box-shadow: 0 6px 16px rgba(0, 255, 128, 0.4); /* slightly smaller shadow */
+  background: #00e0b3;
 }
+
+
 
 /* Custom Notification - styles adapted to match the aesthetic */
 .custom-notif {
