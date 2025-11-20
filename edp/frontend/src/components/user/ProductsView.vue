@@ -65,15 +65,17 @@
       No products match your search.
     </p>
 
-    <ProductDetails
-      v-if="selectedProduct"
-      :product="selectedProduct"
-      @close="selectedProduct = null"
-    />
+
 
     <div :class="['custom-notif', notification.type, { show: notification.show }]">
       {{ notification.message }}
     </div>
+
+ <ProductDetails
+      v-if="selectedProduct"
+      :product="selectedProduct"
+      @close="selectedProduct = null"
+    />
   </div>
 </template>
 

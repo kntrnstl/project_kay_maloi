@@ -2,16 +2,28 @@
   <div class="orders-container">
     <h2 class="title">My Orders</h2>
 
+    <!-- ✅ STATUS FILTER -->
+    <div class="filter-box">
+      <label>Status:</label>
+      <select v-model="selectedStatus" class="filter-select">
+        <option value="">All</option>
+        <option value="pending">Pending</option>
+        <option value="preparing">Preparing</option>
+        <option value="out of delivery">Out of Delivery</option>
+        <option value="delivered">Delivered</option>
+      </select>
+    </div>
+
     <div v-if="loading" class="loading">Loading your orders...</div>
 
-    <div v-else-if="orders.length === 0" class="no-orders">
-      You have no orders yet.
+    <div v-else-if="filteredOrders.length === 0" class="no-orders">
+      No orders found for this status.
     </div>
 
     <div v-else>
       <div
         class="order-card"
-        v-for="order in orders"
+        v-for="order in filteredOrders"
         :key="order.order_id"
       >
         <!-- Order Header -->
@@ -63,11 +75,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import axios from "axios";
 
 const orders = ref([]);
 const loading = ref(true);
+const selectedStatus = ref(""); // NEW
 
 onMounted(async () => {
   try {
@@ -85,6 +98,15 @@ onMounted(async () => {
   }
 });
 
+// ✅ COMPUTED FILTERED ORDERS
+const filteredOrders = computed(() => {
+  if (!selectedStatus.value) return orders.value; // show all
+  return orders.value.filter(
+    (o) => o.status.toLowerCase() === selectedStatus.value.toLowerCase()
+  );
+});
+
+// Format date
 const formatDate = (date) =>
   new Date(date).toLocaleString("en-US", {
     month: "short",
@@ -217,5 +239,17 @@ const formatDate = (date) =>
 .order-summary strong {
   margin-left: 8px;
   color: #d9534f;
+}
+.filter-box {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-select {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
 </style>
