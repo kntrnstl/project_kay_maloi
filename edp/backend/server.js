@@ -32,6 +32,8 @@ app.use('/api/cart', cartRouter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/admin/orders', adminOrdersRouter);
 app.use("/api/orders/my", require("./routes/myOrders"));
+app.use("/api/admin/reports", require("./routes/admin/reports"));
+
 
 
 

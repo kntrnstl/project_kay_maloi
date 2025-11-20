@@ -13,11 +13,10 @@ router.post("/", async (req, res) => {
 
     const { items, total } = req.body;
 
-    if (!items || items.length === 0) {
+    if (!items || items.length === 0)
       return res.status(400).json({ message: "Cart is empty" });
-    }
 
-    // Insert order with DEFAULT status = 'pending'
+    // Create order
     const [orderResult] = await pool.execute(
       "INSERT INTO orders (user_id, total, status) VALUES (?, ?, 'pending')",
       [userId, total]
@@ -25,16 +24,26 @@ router.post("/", async (req, res) => {
 
     const orderId = orderResult.insertId;
 
-    // Insert order_items (NO size_id if not existing)
+    // Insert items & update stock
     for (const item of items) {
+
+      // 1. Insert order item
       await pool.execute(
-        `INSERT INTO order_items (order_id, product_id, size_id, quantity, price) 
+        `INSERT INTO order_items (order_id, product_id, size_id, quantity, price)
          VALUES (?, ?, ?, ?, ?)`,
         [orderId, item.product_id, item.size_id, item.quantity, item.price]
       );
+
+      // 2. Deduct stock
+      await pool.execute(
+        `UPDATE product_sizes 
+         SET stock = stock - ?
+         WHERE id = ?`,
+        [item.quantity, item.size_id]
+      );
     }
 
-    // Clear cart_items only
+    // Clear user's cart
     await pool.execute(
       "DELETE FROM cart_items WHERE cart_id = (SELECT id FROM carts WHERE user_id = ?)",
       [userId]
