@@ -3,7 +3,6 @@ const router = express.Router();
 const pool = require("../../db");
 const auth = require("../../middleware/authMiddleware");
 
-/// ADMIN ONLY MIDDLEWARE
 router.use(auth);
 router.use((req, res, next) => {
   if (req.user.role !== "admin") {
@@ -14,14 +13,14 @@ router.use((req, res, next) => {
 
 
 // ========================================
-// 1. TOTAL SALES
+// 1. TOTAL SALES (STATUS: delivered)
 // ========================================
 router.get("/total-sales", async (req, res) => {
   try {
     const [result] = await pool.execute(`
       SELECT SUM(total) AS total_sales
       FROM orders
-      WHERE status = 'completed'
+      WHERE status = 'delivered'
     `);
 
     res.json(result[0]);
@@ -50,7 +49,7 @@ router.get("/total-users", async (req, res) => {
 
 
 // ========================================
-// 3. ORDERS BREAKDOWN (pending, preparing, completed, cancelled)
+// 3. ORDERS SUMMARY
 // ========================================
 router.get("/orders-summary", async (req, res) => {
   try {
@@ -71,7 +70,7 @@ router.get("/orders-summary", async (req, res) => {
 
 
 // ========================================
-// 4. SALES PER DAY (FILTER BY DATE RANGE)
+// 4. SALES PER DAY
 // ========================================
 router.get("/sales-per-day", async (req, res) => {
   try {
@@ -83,7 +82,7 @@ router.get("/sales-per-day", async (req, res) => {
         DATE(created_at) AS date,
         SUM(total) AS daily_sales
       FROM orders
-      WHERE status = 'completed'
+      WHERE status = 'delivered'
       AND DATE(created_at) BETWEEN ? AND ?
       GROUP BY DATE(created_at)
       ORDER BY date ASC
@@ -112,7 +111,7 @@ router.get("/top-products", async (req, res) => {
       FROM order_items oi
       JOIN products p ON p.id = oi.product_id
       JOIN orders o ON o.id = oi.order_id
-      WHERE o.status = 'completed'
+      WHERE o.status = 'delivered'
       GROUP BY p.id
       ORDER BY total_sold DESC
       LIMIT 10
@@ -127,7 +126,7 @@ router.get("/top-products", async (req, res) => {
 
 
 // ========================================
-// 6. SALES SUMMARY FOR CHARTS (MONTHLY)
+// 6. MONTHLY SALES
 // ========================================
 router.get("/monthly-sales", async (req, res) => {
   try {
@@ -136,7 +135,7 @@ router.get("/monthly-sales", async (req, res) => {
         DATE_FORMAT(created_at, '%Y-%m') AS month,
         SUM(total) AS monthly_sales
       FROM orders
-      WHERE status = 'completed'
+      WHERE status = 'delivered'
       GROUP BY month
       ORDER BY month ASC
     `);
